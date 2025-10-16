@@ -34,7 +34,10 @@ class ListArray : public List<T>
 			n = MINSIZE;
 			max = MINSIZE;
 		}
-		~ListArray();
+		~ListArray()
+		{
+			delete[] arr;
+		}
 		T operator[](int pos)
 		{
 			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
@@ -42,7 +45,14 @@ class ListArray : public List<T>
 		}
 		friend std::ostream&operator<<(std::ostream &out, const ListArray<T> &list)
 		{
-			return list.arr;
+			out << "["; //Ponemos el primer corchete del array
+			for(int i = 0; i < list.n; i++)
+			{
+				out << list.arr[i]; //Guardamos en la respuesta los elementos del array
+				if(i < list.n - 1) out << ", "; //Mientras que no sea el ultimo elemento ponemos una coma
+			}
+			out << "]"; //Cerramos el corchete
+			return out; //Devolvemos la respuesta
 		}
 		
 		//Métodos heredados
@@ -52,14 +62,14 @@ class ListArray : public List<T>
 			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
 			//Añadimos en un array auxiliar los elementos que hay desde la posición donde se quiere insertar
 			//el nuevo elemento hasta el final del array
-			aux = new T[n + 1 - pos];
+			T* aux = new T[n + 1 - pos];
 			for(int i = pos - 1; i < n; i++)
 			{
 				aux[i - pos - 1] = arr[i];
 			}
 			if(n = max) //Comprobamos que el array tenga espacio para más elementos
 			{
-				arr.resize(max + 1); //Actualizamos el tamaño del array
+				this->resize(max + 1); //Actualizamos el tamaño del array
 			}
 			arr[pos - 1] = e; //Insertamos el elemento
 			for(int i = pos; i < n; i++) //Metemos los elementos que habian desde esa posición hasta el final
@@ -78,9 +88,10 @@ class ListArray : public List<T>
 			//Llamamos al metodo insert en la primera posicion del array
 			insert(0, e);
 		}
-		void remove(int pos) override
+		T remove(int pos) override
 		{
 			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
+			T aux = arr[pos - 1]; //Guardo el valor a eliminar en una variable auxiliar
 			for(int i = pos - 1; i < n - 1; i++) //Elimino el elemento en la posición indicada copiando en cada elemento
 							     //desde esa el siguiente en el array
 			{
@@ -88,6 +99,7 @@ class ListArray : public List<T>
 			}
 			arr[n - 1] = T(); //Copio en el ultimo elemento un elemento vacio
 			n -= 1; //Cambio la variable de elementos del array
+			return aux; //Devuelvo el valor eliminado
 		}
 		T get(int pos) override
 		{
@@ -104,7 +116,7 @@ class ListArray : public List<T>
 									  //marca la posición del array, no de la lista
 				else counter++; //Si no, se incrementa el contador
 			}
-			return -1//Si se ha salido del contador, se devuelve -1 porque no está el elemento buscado en la lista
+			return -1; //Si se ha salido del contador, se devuelve -1 porque no está el elemento buscado en la lista
 		}
 		bool empty() override
 		{
