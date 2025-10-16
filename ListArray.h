@@ -1,4 +1,5 @@
 #include <iostream>
+using namespace std;
 #include "List.h"
 
 template <typename T>
@@ -47,6 +48,7 @@ class ListArray : public List<T>
 		
 		void insert(int pos, T e) override
 		{
+			if(pos < 0 || pos > n - 1) throw out_of_range;
 			//Añadimos en un array auxiliar los elementos que hay desde la posición donde se quiere insertar
 			//el nuevo elemento hasta el final del array
 			aux = new T[n + 1 - pos];
@@ -65,4 +67,38 @@ class ListArray : public List<T>
 			}
 			n++; //Actualizamos la cantidad de elementos que contiene el array
 		}
+		void append(T e) override
+		{
+			//Llamamos al metodo insert en la ultima posicion del array
+			insert(n - 1, e);
+		}
+		void prepend(T e) override
+		{
+			//Llamamos al metodo insert en la primera posicion del array
+			insert(0, e);
+		}
+		void remove(int pos) override
+		{
+			for(int i = pos - 1; i < n - 1; i++) //Elimino el elemento en la posición indicada copiando en cada elemento
+							     //desde esa el siguiente en el array
+			{
+				arr[i] = arr[i + 1];
+			}
+			arr[n - 1] = T(); //Copio en el ultimo elemento un elemento vacio
+			n -= 1; //Cambio la variable de elementos del array
+		}
+		T get(int pos) override
+		{
+			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
+			return arr[pos - 1];
+		}
+		int search(T e) override
+		{
+			int counter = 0; //Creo un contador para guardar la posición del array
+			while(counter < n)
+			{
+				if(arr[counter] == e) break; //Si el elemento almacenado en esa posición es el buscado, se sale del bucle
+				else counter++; //Si no, se incrementa el contador
+			}
+			return -1//Se devuelve counter + 1 porque counter es la posición en el array, no en la lista
 };
