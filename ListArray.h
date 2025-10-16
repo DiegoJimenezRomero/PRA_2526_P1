@@ -37,6 +37,7 @@ class ListArray : public List<T>
 		~ListArray();
 		T operator[](int pos)
 		{
+			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
 			return arr[pos];
 		}
 		friend std::ostream&operator<<(std::ostream &out, const ListArray<T> &list)
@@ -48,7 +49,7 @@ class ListArray : public List<T>
 		
 		void insert(int pos, T e) override
 		{
-			if(pos < 0 || pos > n - 1) throw out_of_range;
+			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
 			//Añadimos en un array auxiliar los elementos que hay desde la posición donde se quiere insertar
 			//el nuevo elemento hasta el final del array
 			aux = new T[n + 1 - pos];
@@ -79,6 +80,7 @@ class ListArray : public List<T>
 		}
 		void remove(int pos) override
 		{
+			if(pos < 0 || pos > n - 1) throw out_of_range("Posicion introducida fuera del rango (0, size() - 1)");
 			for(int i = pos - 1; i < n - 1; i++) //Elimino el elemento en la posición indicada copiando en cada elemento
 							     //desde esa el siguiente en el array
 			{
@@ -97,8 +99,20 @@ class ListArray : public List<T>
 			int counter = 0; //Creo un contador para guardar la posición del array
 			while(counter < n)
 			{
-				if(arr[counter] == e) break; //Si el elemento almacenado en esa posición es el buscado, se sale del bucle
+				if(arr[counter] == e) return counter + 1; //Si el elemento almacenado en esa posición es el buscado
+									  //se devuelve la posición. Se devuelve counter + 1 porque el contador
+									  //marca la posición del array, no de la lista
 				else counter++; //Si no, se incrementa el contador
 			}
-			return -1//Se devuelve counter + 1 porque counter es la posición en el array, no en la lista
+			return -1//Si se ha salido del contador, se devuelve -1 porque no está el elemento buscado en la lista
+		}
+		bool empty() override
+		{
+			if(n == 0) return true; //Si la cantidad de elementos del array es 0, el array esta vacío
+			else return false; //Si no, no está vacío
+		}
+		int size() override
+		{
+			return n; //n contiene la cantidad de elementos del array
+		}
 };
