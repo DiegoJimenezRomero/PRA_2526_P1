@@ -1,5 +1,4 @@
 #include <ostream>
-using namespace std;
 #include "List.h"
 #include "Node.h"
 
@@ -35,18 +34,19 @@ class ListLinked : public List<T>
 			{
 				aux = aux->next;
 			}
-			return aux.data; //Devuelvo el valor almacenado en la posición especificada
+			return aux->data; //Devuelvo el valor almacenado en la posición especificada
 		}
 
-		friend T operator<<(std::ostream &out, const ListLinked<T>* &list) //Sobrecarga del operador << para imprimir una instancia de la lista
+		friend std::ostream& operator<<(std::ostream &out, const ListLinked<T>* &list) //Sobrecarga del operador << para imprimir una
+											      //instancia de la lista
 		{
 			out << "List (Node): ";
 			Node<T>* aux = list.first; //Creo un nodo auxiliar para recorrer la lista
-			for(int i = 0; i < list.n; i++)
+			for(int i = 0; i < list->n; i++)
 			{
-				out << aux.data; //Almaceno en out el valor del nodo actual
-				if(i < list.n - 1) out << " -> "; //Si no es la ultima posición pongo una flecha entre medias
-				aux = aux.next; //Avanzo al siguiente nodo
+				out << aux->data; //Almaceno en out el valor del nodo actual
+				if(i < list->n - 1) out << " -> "; //Si no es la ultima posición pongo una flecha entre medias
+				aux = aux->next; //Avanzo al siguiente nodo
 			}
 			return out;
 		}
@@ -64,13 +64,13 @@ class ListLinked : public List<T>
 			if(pos == 0)
 			{
 				first->next = aux; //Pongo a aux (que es una copia del primer elemento) en segunda posición
-				first.data = e; //Cambio el primer elemento al elemento especificado
+				first->data = e; //Cambio el primer elemento al elemento especificado
 			}
 			else
 			{
 				newNode->next = aux->next; //Pongo el nuevo nodo delante del nodo que estaba en la posición especificada
 				aux->next = newNode; //Pongo el nuevo nodo detrás del nodo que estaba delante del nodo antiguo
-				newNode.data = e; //Almaceno en el nuevo nodo el elemento especificado
+				newNode->data = e; //Almaceno en el nuevo nodo el elemento especificado
 			}
 		}
 
@@ -87,7 +87,8 @@ class ListLinked : public List<T>
 		T remove(int pos) override
 		{
 			if(pos < 0 || pos > n - 1) throw out_of_range("Posición fuera del rango (0, size() - 1)");
-			Node<T>* aux1 = first, aux2; //Creo dos punteros para recorrer la lista
+			Node<T>* aux1 = first; //Creo dos punteros para recorrer la lista
+			Node<T>* aux2;
 			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
 			{
 				aux2 = aux1; //aux2 marca la posición de antes del elemento que queremos eliminar
@@ -95,7 +96,7 @@ class ListLinked : public List<T>
 			}
 			aux2->next = aux1->next; //Eliminamos el puntero de la posición especificada
 						 //desvinculandolo de la posición anterior y posterior
-			return aux1.data; //Devolvemos el elemento almacenado en la posición eliminada
+			return aux1->data; //Devolvemos el elemento almacenado en la posición eliminada
 		}
 
 		T get(int pos) override
@@ -106,14 +107,14 @@ class ListLinked : public List<T>
 			{
 				aux = aux->next;
 			}
-			return aux.data;
+			return aux->data;
 		}
 
 		int search(T e) override
 		{
 			int pos = 0; //Creo un contador para marcar la posición
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
-			while(aux.data != e) //Recorro la lista con un bucle while para detectar si se ha encontrado el elemento
+			while(aux->data != e) //Recorro la lista con un bucle while para detectar si se ha encontrado el elemento
 			{
 				aux = aux->next;
 				pos++;
