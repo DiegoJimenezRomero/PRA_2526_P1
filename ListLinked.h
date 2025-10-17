@@ -55,6 +55,7 @@ class ListLinked : public List<T>
 		
 		void insert(int pos, T e) override
 		{
+			if(pos < 0 || pos > n - 1) throw out_of_range("Posición fuera de rango(0,size() - 1)");
 			Node<T>* newNode = new Node<T>(e); //Creo un nuevo nodo para insertar el elemento en la lista
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
 			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
@@ -65,15 +66,19 @@ class ListLinked : public List<T>
 			{
 				first = newNode;
 				first->next = aux; //Pongo a aux (que es una copia del primer elemento) en segunda posición
-				first->data = e; //Cambio el primer elemento al elemento especificado
 			}
 			else
 			{
-				newNode->next = aux->next; //Pongo el nuevo nodo delante del nodo que estaba en la posición especificada
+				if(aux != nullptr)newNode->next = aux->next; //Pongo el nuevo nodo delante del nodo que estaba
+									     //en la posición especificada
 				aux->next = newNode; //Pongo el nuevo nodo detrás del nodo que estaba delante del nodo antiguo
 				newNode->data = e; //Almaceno en el nuevo nodo el elemento especificado
+				if(pos == 1) //Si además, la posición es la siguiente a first, tengo que actualizar first tambien
+				{
+					first->next = aux->next;
+				}
 			}
-			n++;
+			n++; //Actualizo la cantidad de elementos de la lista
 		}
 
 		void append(T e) override
