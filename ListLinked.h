@@ -28,9 +28,9 @@ class ListLinked : public List<T>
 
 		T operator[](int pos) //Sobrecarga (overload) del operador [] para indicar elemento almacenado en la posición requerida
 		{
-			if(pos < 0 || pos > size() - 1) throw out_of_range("Posición fuera del rango (0, size() - 1)");
+			if(pos < 0 || pos >= size()) throw out_of_range("Posición fuera del rango (0, size() - 1)");
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
-			for(int i = 0; i <= pos; i++) //Recorro la lista con un bucle for
+			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
 			{
 				aux = aux->next;
 			}
@@ -55,10 +55,10 @@ class ListLinked : public List<T>
 		
 		void insert(int pos, T e) override
 		{
-			if(pos < 0 || pos > n - 1) throw out_of_range("Posición fuera de rango(0,size() - 1)");
+			if(pos < 0 || pos > n && n != 0) throw out_of_range("Posición fuera de rango(0,size() - 1)");
 			Node<T>* newNode = new Node<T>(e); //Creo un nuevo nodo para insertar el elemento en la lista
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
-			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
+			for(int i = 0; i < pos - 1; i++) //Recorro la lista con un bucle for
 			{
 				aux = aux->next;
 			}
@@ -71,11 +71,10 @@ class ListLinked : public List<T>
 			{
 				if(aux != nullptr)newNode->next = aux->next; //Pongo el nuevo nodo delante del nodo que estaba
 									     //en la posición especificada
-				aux->next = newNode; //Pongo el nuevo nodo detrás del nodo que estaba delante del nodo antiguo
-				newNode->data = e; //Almaceno en el nuevo nodo el elemento especificado
+				aux->next = newNode; //Pongo el nuevo nodo detrás del nodo que estaba delante del nodo anterior
 				if(pos == 1) //Si además, la posición es la siguiente a first, tengo que actualizar first tambien
 				{
-					first->next = aux->next;
+					first->next = newNode;
 				}
 			}
 			n++; //Actualizo la cantidad de elementos de la lista
@@ -83,7 +82,7 @@ class ListLinked : public List<T>
 
 		void append(T e) override
 		{
-			insert(n - 1, e); //Llamo al metodo insert() en la ultima posición de la lista
+			insert(n, e); //Llamo al metodo insert() en la ultima posición de la lista
 		}
 
 		void prepend(T e) override
@@ -93,22 +92,25 @@ class ListLinked : public List<T>
 
 		T remove(int pos) override
 		{
-			if(pos < 0 || pos > n - 1) throw out_of_range("Posición fuera del rango (0, size() - 1)");
+			if(pos < 0 || pos >= n) throw out_of_range("Posición fuera del rango (0, size() - 1)");
 			Node<T>* aux1 = first; //Creo dos punteros para recorrer la lista
 			Node<T>* aux2;
-			for(int i = 0; i < pos - 1; i++) //Recorro la lista con un bucle for
+			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
 			{
 				aux2 = aux1; //aux2 marca la posición de antes del elemento que queremos eliminar
 				aux1 = aux1->next; //aux1 marca la posición del elemento que queremos eliminar
 			}
-			aux2->next = aux1->next; //Eliminamos el puntero de la posición especificada
-						 //desvinculandolo de la posición anterior y posterior
+			if(pos == 0) first = first->next;
+			else if(pos == 1) first->next = aux1->next;
+			else aux2->next = aux1->next; //Eliminamos el puntero de la posición especificada
+						//desvinculandolo de la posición anterior y posterior
+			n--;
 			return aux1->data; //Devolvemos el elemento almacenado en la posición eliminada
 		}
 
 		T get(int pos) override
 		{
-			if(pos < 0 || pos > n - 1) throw out_of_range("Posición fuera del rango (0, size() - 1)");
+			if(pos < 0 || pos >= n) throw out_of_range("Posición fuera del rango (0, size() - 1)");
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
 			for(int i = 0; i < pos; i++) //Recorro la lista con un bucle for
 			{
@@ -121,7 +123,7 @@ class ListLinked : public List<T>
 		{
 			int pos = 0; //Creo un contador para marcar la posición
 			Node<T>* aux = first; //Creo un nodo auxiliar para recorrer la lista
-			while(aux->data != e) //Recorro la lista con un bucle while para detectar si se ha encontrado el elemento
+			while(aux != nullptr && aux->data != e) //Recorro la lista con un bucle while para detectar si se ha encontrado el elemento
 			{
 				aux = aux->next;
 				pos++;
@@ -132,7 +134,7 @@ class ListLinked : public List<T>
 
 		bool empty() override
 		{
-			if(n = 0) return true;
+			if(n == 0) return true;
 			else return false;
 		}
 
